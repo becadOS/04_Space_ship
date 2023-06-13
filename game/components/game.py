@@ -15,7 +15,6 @@ class Game:
         self.playing = False
         self.game_speed = 10
         
-        
         self.x_pos_bg = 0
         self.y_pos_bg = 0
         self.player = Spaceship()
