@@ -2,7 +2,7 @@ import pygame
 import random
 
 from game.components.enemies.enemy import Enemy
-from game.utils.constants import ENEMY_2
+from game.utils.constants import ENEMY_2, SCREEN_HEIGHT
 
 class Enemy_1(Enemy):
     def __init__(self):
@@ -19,3 +19,4 @@ class Enemy_1(Enemy):
         self.move_x_for = random.randint(30,100)
         self.index = 0
         self.shooting_time = random.randint(30, 50)
+        

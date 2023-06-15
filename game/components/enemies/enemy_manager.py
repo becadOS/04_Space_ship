@@ -7,20 +7,21 @@ from game.components.enemies.enemy_3 import Enemy_3
 
 
 class EnemyManager:
-    ENEMIE = [Enemy(), Enemy_1(), Enemy_2(), Enemy_3()]
     def __init__(self):
-        self.enemies = pygame.sprite.Group()
+        self.enemies = []
     
-    def update(self):
+    def update(self, game):
         self.add_enemy()
         for enemy in self.enemies:
-            enemy.update(self.enemies)
+            enemy.update(self.enemies, game)
         
         
     def add_enemy(self):
-        if len(self.enemies)<5:
-            ran = random.randint(0, 3)
-            self.enemies.add(self.ENEMIE[ran])
+        if len(self.enemies)<4:
+            self.enemies.append(Enemy())
+            self.enemies.append(Enemy_1())
+            self.enemies.append(Enemy_2())
+            self.enemies.append(Enemy_3())
             
     
     def draw(self, screen):
