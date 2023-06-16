@@ -7,6 +7,7 @@ from game.components.bullets.bullet import Bullet
 class Spaceship(Sprite):
     X_POS = (SCREEN_WIDTH // 2)
     Y_POS = SCREEN_HEIGHT // 2
+    SHOOTING_TIME = 1
     
     def __init__ (self):
         self.size = 25
@@ -17,7 +18,7 @@ class Spaceship(Sprite):
         self.rect.x = self.X_POS
         self.rect.y = self.Y_POS
         self.type = 'player'
-        self.shooting_time = random.randint(40, 60)
+        self.shooting_time = 0
     
     
     def move_left (self):
@@ -38,6 +39,8 @@ class Spaceship(Sprite):
             self.rect.y += 10  
             
     def update (self, user_input, game):
+        self.shooting_time += 1
+        self.collision_enemy(game)
         if user_input[pygame.K_LEFT]:
             self.move_left()
         if user_input[pygame.K_RIGHT]:
@@ -50,11 +53,17 @@ class Spaceship(Sprite):
             self.shoot(game.bullet_manager)
             
     def shoot(self, bullet_manager):
-        current_time = pygame.time.get_ticks()
-        if self.shooting_time <= current_time:
+        if self.shooting_time % self.SHOOTING_TIME == 0:
             bullet = Bullet(self)
             bullet_manager.add_bullet(bullet)
-            self.shooting_time += random.randint(20, 50)
+            
+    def collision_enemy (self,game):
+        for enemy in game.enemy_manager.enemies:
+            if enemy.rect.colliderect(game.player):
+                game.death_count += 1
+                game.playing = False
+                pygame.time.delay(1000)
+                break
             
     def draw (self, screen):
         screen.blit(self.image, (self.rect.x , self.rect.y))
