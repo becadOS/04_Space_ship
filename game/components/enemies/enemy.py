@@ -69,7 +69,7 @@ class Enemy(Sprite):
     def shoot(self, bullet_manager):
         if self.shooting_time % self.SHOOTING_TIME == 0:
             bullet = Bullet(self)
-            bullet_manager.add_bullet(bullet)
+            bullet_manager.add_bullet(bullet, False)
     
     def draw(self, screen):
         screen.blit(self.image, (self.rect.x, self.rect.y))

@@ -1,6 +1,6 @@
 import pygame
 
-from game.utils.constants import BG, ICON , SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE, FONT_STYLE, LIFE_TYPE, SHIELD_TYPE
+from game.utils.constants import BG, ICON , SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, DEFAULT_TYPE, FONT_STYLE, LIFE_TYPE, SHIELD_TYPE,BULLET_TYPE
 
 from game.components.spaceship import Spaceship
 from game.components.enemies.enemy_manager import EnemyManager
@@ -97,15 +97,18 @@ class Game:
         
         
     def draw_power_up_time(self):
-            
-        time_to_show = round((self.player.power_time_up - pygame.time.get_ticks())/1000, 2)
-        if time_to_show >= 0:
-            if self.player.has_power_up and self.player.power_up_type == SHIELD_TYPE :
-                self.menu.draw(self.screen, f'{self.player.power_up_type.capitalize()} is enabled for {time_to_show} in seconds', 500,50, (255,255,255))
-        else:
-            self.player.has_power_up = False
-            self.player.power_up_type = DEFAULT_TYPE
-            self.player.set_image()
+        for power_up in self.power_up_manager.power_ups_active:
+            time_to_show = round((power_up.time_up - pygame.time.get_ticks())/1000, 2)
+            if time_to_show >= 0:
+                if  power_up.type == SHIELD_TYPE :
+                    self.menu.draw(self.screen, f'{power_up.type.capitalize()} is enabled for {time_to_show} in seconds', 500,50, (255,255,255))
+            else:
+                self.power_up_manager.desactivate_power(power_up)
+                self.player.set_image()
+                if power_up.type == SHIELD_TYPE:
+                    self.power_up_manager.is_shield = False
+                if power_up.type == BULLET_TYPE:
+                    self.power_up_manager.is_bullet = False
     
     def draw_background(self):
         image = pygame.transform.scale(BG, (SCREEN_WIDTH, SCREEN_HEIGHT))

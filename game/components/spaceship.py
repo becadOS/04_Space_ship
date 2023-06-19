@@ -27,7 +27,6 @@ class Spaceship(Sprite):
         
         self.has_power_up = False
         self.power_time_up = 0
-        self.power_up_type = DEFAULT_TYPE
         
     
     
@@ -49,6 +48,7 @@ class Spaceship(Sprite):
             self.rect.y += 10  
             
     def update (self, user_input, game):
+        bullet_power = game.power_up_manager.is_bullet
         self.shooting_time += 1
         self.collision_enemy(game)
         if user_input[pygame.K_LEFT]:
@@ -60,17 +60,17 @@ class Spaceship(Sprite):
         if user_input[pygame.K_DOWN]:
             self.move_down()
         if user_input[pygame.K_SPACE]:
-            self.shoot(game.bullet_manager)
+            self.shoot(game.bullet_manager, bullet_power)
         self.center = self.rect.center
             
-    def shoot(self, bullet_manager):
-        if self.shooting_time % self.SHOOTING_TIME == 0:
+    def shoot(self, bullet_manager,bullet_power):
+        if self.shooting_time % self.SHOOTING_TIME == 0: 
             bullet = Bullet(self)
-            bullet_manager.add_bullet(bullet)
+            bullet_manager.add_bullet(bullet, bullet_power)
             
     def collision_enemy (self,game):
         for enemy in game.enemy_manager.enemies:
-            if enemy.rect.colliderect(game.player) and self.power_up_type != SHIELD_TYPE:
+            if enemy.rect.colliderect(game.player) and not(game.power_up_manager.is_shield):
                 game.enemy_manager.enemies.remove(enemy)
                 game.score.update()
                 game.player.life.update(game.player)
@@ -79,7 +79,7 @@ class Spaceship(Sprite):
                     game.player.is_alive = False
                     pygame.time.delay(1000)
 
-            elif enemy.rect.colliderect(game.player) and self.power_up_type == SHIELD_TYPE:
+            elif enemy.rect.colliderect(game.player) and game.power_up_manager.is_shield:
                 game.enemy_manager.enemies.remove(enemy)
                 game.score.update()
             
