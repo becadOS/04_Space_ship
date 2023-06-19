@@ -1,8 +1,9 @@
 import pygame
 import random
 from pygame.sprite import Sprite
-from game.utils.constants import SPACESHIP, SCREEN_HEIGHT, SCREEN_WIDTH
+from game.utils.constants import SPACESHIP, SCREEN_HEIGHT, SCREEN_WIDTH, DEFAULT_TYPE , SHIELD_TYPE
 from game.components.bullets.bullet import Bullet
+from game.components.life import Life
 
 class Spaceship(Sprite):
     X_POS = (SCREEN_WIDTH // 2)
@@ -13,12 +14,21 @@ class Spaceship(Sprite):
         self.size = 25
         self.spacechip_width = SCREEN_WIDTH // self.size
         self.spacechip_height = self.spacechip_width * 1.5
-        self.image = pygame.transform.scale(SPACESHIP, (self.spacechip_width, self.spacechip_height))
+        self.image = pygame.transform.scale(SPACESHIP, (40, 60))
         self.rect = self.image.get_rect()
         self.rect.x = self.X_POS
         self.rect.y = self.Y_POS
+        
+        self.life = Life(3)
+        self.is_alive = True
+        
         self.type = 'player'
         self.shooting_time = 0
+        
+        self.has_power_up = False
+        self.power_time_up = 0
+        self.power_up_type = DEFAULT_TYPE
+        
     
     
     def move_left (self):
@@ -51,6 +61,7 @@ class Spaceship(Sprite):
             self.move_down()
         if user_input[pygame.K_SPACE]:
             self.shoot(game.bullet_manager)
+        self.center = self.rect.center
             
     def shoot(self, bullet_manager):
         if self.shooting_time % self.SHOOTING_TIME == 0:
@@ -59,11 +70,29 @@ class Spaceship(Sprite):
             
     def collision_enemy (self,game):
         for enemy in game.enemy_manager.enemies:
-            if enemy.rect.colliderect(game.player):
-                game.death_count += 1
-                game.playing = False
-                pygame.time.delay(1000)
-                break
+            if enemy.rect.colliderect(game.player) and self.power_up_type != SHIELD_TYPE:
+                game.enemy_manager.enemies.remove(enemy)
+                game.score.update()
+                game.player.life.update(game.player)
+                if not(game.player.is_alive):
+                    game.death_count.update()
+                    game.player.is_alive = False
+                    pygame.time.delay(1000)
+
+            elif enemy.rect.colliderect(game.player) and self.power_up_type == SHIELD_TYPE:
+                game.enemy_manager.enemies.remove(enemy)
+                game.score.update()
+            
+    def reset(self):
+        self.rect.x = self.X_POS
+        self.rect.y = self.Y_POS
+        self.life = Life(3)
+        self.is_alive = True
+        
+    def set_image(self, size = (40,60), image = SPACESHIP):
+        self.image = image
+        self.image = pygame.transform.scale(self.image, (size))
+    
             
     def draw (self, screen):
         screen.blit(self.image, (self.rect.x , self.rect.y))

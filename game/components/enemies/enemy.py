@@ -4,6 +4,7 @@ import random
 from pygame.sprite import Sprite
 from game.utils.constants import ENEMY_1, SCREEN_HEIGHT, SCREEN_WIDTH
 from game.components.bullets.bullet import Bullet
+from game.components.life import Life
 
 class Enemy(Sprite):
     Y_POS = 20
@@ -24,14 +25,19 @@ class Enemy(Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = random.randint(1,20)*50
         self.rect.y = self.Y_POS
+        
+        self.life = Life()
+        self.is_alive = True
+        
         self.type = 'enemy'
+        self.shooting_time = 0
         
         self.SPEED_X = self.SPEED_X
         self.SPEED_Y = self.SPEED_Y
         self.movement_x = self.MOV_X[random.randint(0,1)]
         self.move_x_for = random.randint(30,100)
         self.index = 0
-        self.shooting_time = 0
+        
         
         
         

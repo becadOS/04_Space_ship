@@ -9,6 +9,9 @@ from game.components.enemies.enemy_3 import Enemy_3
 class EnemyManager:
     def __init__(self):
         self.enemies = []
+        self.when_appears_enemy = random.randint(500,1000)
+        self.when_appears_enemy_2 = random.randint(3000,5000)
+        self.when_appears_boss = random.randint(60*1000,70*1000)
     
     def update(self, game):
         self.add_enemy()
@@ -17,11 +20,15 @@ class EnemyManager:
         
         
     def add_enemy(self):
-        if len(self.enemies)<4:
+        current_time = pygame.time.get_ticks()
+        if current_time >= self.when_appears_enemy:
+            self.when_appears_enemy += random.randint(1000,2000)
             self.enemies.append(Enemy())
-            self.enemies.append(Enemy_1())
+        if current_time >= self.when_appears_enemy_2:
+            self.when_appears_enemy_2 += random.randint(3000,5000)
             self.enemies.append(Enemy_2())
             self.enemies.append(Enemy_3())
+            
             
     
     def draw(self, screen):
